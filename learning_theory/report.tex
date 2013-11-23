@@ -1,0 +1,558 @@
+\documentclass[12pt,reqno]{amsart}
+\usepackage{fullpage}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{times}
+\usepackage{graphicx}
+\vfuzz=2pt
+
+% some "funny lines" referred to later:
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{example}[thm]{Example}
+\newtheorem{definition}[thm]{Definition}
+{ \theoremstyle{remark}\newtheorem*{remark}{Remark} }
+
+\newcommand{\class}{MATH 613E: Topics in Analytic Number Theory}
+\newcommand{\population}[2]{There are #2 students giving lectures, and also #2 students writing up notes from lectures. Everybody in the class is very #1 about this.}
+\newcommand{\tex}{{\tt .tex}}
+
+%\newenvironment{definition}[1][Definition]{\begin{trivlist}
+%\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+
+\begin{document}
+
+\title[Short version of title]{Summary : \\ \small \emph{Mathematical Aspects of Mixing Times in Markov Chain}}
+% or if you want, simply \title{Title of the article}
+\author{Jiecao Chen \\ \tiny jieca001@umn.edu }
+
+\maketitle
+
+\begin{abstract}
+In is paper, important concepts and basic idea from \textit{Mathematical Aspects of Mixing Times in Markov Chains} will be covered.
+\end{abstract}
+
+\section{Basic Bound on Mixing Times}
+\label{math}
+
+\subsection{Preliminaries: Distance and mixing times}
+
+Let $(\Omega,P,\pi)$ denote Markov kernel of a finite Markov chain on a finte state
+space $\Omega$ with a unique invariant measure $\pi$. That is 
+\[ P(x,y)\leq 0, \forall x,y \in \Omega, and~ \sum_{y\in \Omega}P(x,y)=1, \forall x\in \Omega
+\] 
+\[
+\sum_{x\in \Omega}\pi (x)P(x,y) = \pi(y), \forall y \in \Omega.
+\]
+
+In this summary, we assume $P$ is irreducible and $\pi$ has full support ($\Omega$).
+
+Minimal holding probability $\alpha \in [0,1]$ satisfies $\forall x\in \Omega:
+P(x,y) \geq \alpha$
+
+Let $k_n^x(y)=P^n(x,y)/\pi(y)$ donate the density with respect to $\pi$ at time $n\geq 0$, or simply $k_n(y)$ when start rate or start distribution is unimportant or clear from the context. Then $lim_{n\rightarrow \infty}k_n^x(y) = 1$
+
+If $\mu$ is a probability distribution on $\Omega$, then
+\begin{itemize}
+\item Total Variation Distance: 
+  $\|\mu-\pi\|_{TV} = \frac{1}{2}\|\frac{\mu}{\pi} -1 \| = 
+  \frac{1}{2} \sum_{y\in\Omega} |\mu(y)-\pi(y)|$
+\item Variance:
+  $Var_{\pi}(\mu/\pi) = |\frac{\mu}{\pi}-1 \|_{2,\pi}^2 = 
+  \sum_{y\in\Omega}\pi(y)(\frac{\mu(y)}{\pi(y)} -1)^2$
+\item Informational divergence:
+  $D(P^n(x,\cdot)\|\pi) = Ent_{\pi}(k_n^x) = 
+  \sum_{y\in\Omega}P^n(x,y)\log\frac{P^n(x,y)}{\pi(y)}$\\
+  Where the entropy $Ent_{\pi}(f)=E_{\pi}f\log\frac{f}{E_{\pi}f}$.
+\end{itemize}
+Each of these distance are convex, which means given $s\in[0,1], dist((1-s)\mu + s\nu, \pi)\leq (1-s)dist(\mu,\pi) + s~dist(\nu,\pi)$. A convex distance satisfies the condition
+\begin{equation}
+  \label{eq:1.1}
+dist(\sigma P^n,\pi) = dist  (\sum_{x\in\Omega}\sigma(x)P^n(x,\cdot),\pi )
+\leq \sum_{x\in\Omega}\sigma(x) dist( P^n(x,\cdot),\pi )
+\leq max_{x\in\Omega}dist( P^n(x,\cdot),\pi ) 
+\end{equation}
+
+
+
+so the distance is maximized when the initial distribution concentrate at a point.
+
+\begin{definition}
+The total variation, relative entropy and $L^2$ mixing times are defined as follows.
+\begin{itemize}
+\item $\tau(\epsilon) = \min\{n:\forall x\in \Omega, \|P^n(x,\cdot)-\pi\|_{TV}\leq \epsilon\}$
+\item $\tau_D(\epsilon) = \min\{n:\forall x\in \Omega, D(P^n(x,\cdot)\|\pi) \leq \epsilon\}$
+\item $\tau_2(\epsilon) = \min\{n:\forall x\in \Omega, \|k_n^x-1\|_{2,\pi} \leq \epsilon\}$
+\end{itemize}
+\end{definition}
+
+The time-reversal $P^*$ is defined by $\pi(x)P^*(x,y) = \pi(y)P(y,x),~x,y\in\Omega$, 
+and we have $\langle f,Pg\rangle_{\pi}=\langle P^*f,g\rangle_{\pi}$
+
+For $f,g:\Omega\rightarrow R$, let $\mathcal{E}(f,g) = \mathcal{E}_P(f,g)$ denote the Dirichlet form,
+\begin{equation}
+  \mathcal{E}(f,g) = \langle f,(I-P)g \rangle_{\pi}
+\end{equation}
+if $f=g$ then
+\begin{equation}
+  \mathcal{E}(f,f) = \frac{1}{2}\sum_{x,y}(f(x)-f(y))^2P(x,y)\pi(x)
+\end{equation}
+and
+\begin{equation}
+  \mathcal{E}_P(f,f) = \mathcal{E}_{P^*}(f,f) = \mathcal{E}_{\frac{P+P^*}{2}(f,f)}
+\end{equation}
+
+A useful property of the reversal is that $k_n = P^*k_{n-1}$. If $P^*=P$, then $P$ is said to be the time-reversible, or to satisfy the detailed balance condition. It's almost trivial to see that
+$\frac{P+P^*}{2}$  and $PP^*$ are time-reversible.
+If $P$ is reversible then $\mathcal{E}(f,g) = \mathcal{E}(g,f)$
+
+
+Also, we borrow some notation from complexity theory, including $O,\Theta,\Omega$.
+
+
+
+
+
+\subsection{Continuous Time}
+Discrete Laplacian $\mathcal{L} = -(I-P)$. Then for $t\geq 0, H_t = e^{t\mathcal{L}}$ represents the continuized chain, corresponding to the discrete Markov kernel P. The contuized chain simply represents a Markov process $\{X_t\}_{t\geq 0}$. Also, let $h_t^x(y) = H_t(x,y)/\pi(y)$.
+
+\begin{lem}
+For any $h_0$ and all $t \geq 0$, $h_t = H^*_th_0$. Consequently, for any $x \in \Omega$,
+$$
+\frac{dh_t(x)}{dt} = \mathcal{L}h_t(x)
+$$
+\end{lem}
+
+\begin{lem}
+  \begin{equation}
+    \frac{d}{dt}Var(h_t) = -2 \mathcal{E}(h_t,h_t)
+  \end{equation}
+
+  \begin{equation}
+    \frac{d}{dt}Ent(h_t) = - \mathcal{E}(h_t,\log h_t)
+  \end{equation}
+
+  \begin{proof}
+    Trivial to show.
+  \end{proof}
+\end{lem}
+
+
+\textbf{Spectral gap} $\lambda$ and \textbf{entropy constant } $\rho_0$
+\begin{definition}
+  Let $\lambda > 0$ and $\rho_0 > 0$ be the optimal constants in the inequalities:
+  \begin{equation}
+    \label{eq:specral_gap}
+    \lambda Var_{\pi}f \leq \mathcal{E}(f,f), \forall f:\Omega \rightarrow R.
+  \end{equation}
+  \begin{equation}
+    \label{eq:entropy_constant}
+    \rho_0 Ent_{\pi}f \leq \mathcal{E}(f,\log f), \forall f:\Omega \rightarrow R_+.
+  \end{equation}
+\end{definition}
+
+\begin{cor}
+  Let $\pi_* = min_{x\in \Omega}\pi(x)$. Then in the continuous time,
+  \begin{equation}
+    \tau_2(\epsilon) \leq \frac{1}{\lambda}\big(\frac{1}{2}\log \frac{1-\pi_*}{\pi_*} + \log
+    \frac{1}{\epsilon} \big)
+  \end{equation}
+  \begin{equation}
+    \tau_D(\epsilon) \leq \frac{1}{\rho_0}\big(\log \log \frac{1}{\pi_*} + \frac{1}{\epsilon} \big)
+  \end{equation}
+  \begin{proof}
+    Simply solve the differential equations,
+    \begin{equation}
+      \frac{d}{dt}Var(h_t^x) = -2 \mathcal{E}(h_t^x,h_t^x) \leq -2\lambda Var(h_t^x) 
+    \end{equation}
+    \begin{equation}
+      \frac{d}{dt}Ent(h_t^x) = - \mathcal{E}(h_t^x,\log h_t^x) \leq Ent(h_t^x)
+    \end{equation}
+and note that $Var(h_0) \leq \frac{1-\pi_*}{\pi_*}$ and $Ent(h_0)\leq \log \frac{1}{\pi_*}$
+(e.q. by equation \eqref{eq:1.1})
+  \end{proof}
+\end{cor}
+
+\begin{prop}
+If $c > 0$ then
+  \begin{enumerate}
+  \item $Var_{\pi}(H_tf)\leq e^{-ct}Var_{\pi}f, \forall f ~and~ t > 0$, if and only if $\lambda\geq c.$
+  \item $Ent_{\pi}(H_tf)\leq e^{-ct}Ent_{\pi}f, \forall f>0 ~and~ t > 0$, if and only if $\rho_0 \geq c$
+  \end{enumerate}
+\end{prop}
+
+
+
+$\rho_0$ is rather challenging to estimate while there have been several techniques (linear-algebraic and functional-analytic) to help bound the spectral gap. The following inequality relating the two Dirichlet forms introduced above also motivates the study of classical logarithmic Sobolev inequality. 
+\begin{lem}
+  If $f\geq 0$ then
+  \begin{equation}
+    \label{eq:two_forms}
+    2\mathcal{E}(\sqrt{f}, \sqrt{f}) \leq \mathcal{E}(f,\log f)
+  \end{equation}
+\end{lem}
+
+Let $\rho_P > 0$ denote the logarithmic Sobolev constant of $P$ defined as follows.
+\begin{definition}
+
+  $$\displaystyle \rho = \rho_P = {inf}_{\substack{Ent f^2\neq 0}}\frac{\mathcal{E}(f,f)}{Ent f^2}$$
+
+\end{definition}
+
+\begin{prop}
+  For every irreducible chain $P$,
+$$2\rho \leq \rho_0 \leq 2\lambda$$
+  \begin{proof}
+    Using \eqref{eq:two_forms}, the first inequality is immediate. The second follows from applying \eqref{eq:entropy_constant} to function $f = 1 + \epsilon g$, where $g\in L^2(\pi)$ and $E_{\pi}g=0$. Assume $\epsilon \ll 1$, so that $f \geq 0$. Then using the Taylor approximation, 
+$\log(1+\epsilon g) = \epsilon g - 1/2 (\epsilon)^2g^2+o(\epsilon^2)$, we have 
+$$Ent_{\pi}(f) = \frac{1}{2}\epsilon^2\pi(g)^2 + o(\epsilon^2)
+$$
+and
+$$ \mathcal{E}(f,\log f) = -\epsilon E_{\pi}((\mathcal{L}g)\log(1+\epsilon g)) = 
+\epsilon^2\mathcal{E}(g,g)+o(\epsilon^2).
+$$
+Thus starting from \eqref{eq:entropy_constant}, and applying to $f$ as above, we get
+$$
+\epsilon^2 \mathcal{E}(g,g) \geq \frac{\rho_0}{2}\epsilon^2E_{\pi}g^2+o(\epsilon^2).
+$$
+Canceling $\epsilon^2$ and letting $\epsilon \downarrow 0$, yields the second inequality of the proposition, since $E_{\pi}g=0$
+  \end{proof}
+\end{prop}
+
+
+\subsection{Discrete Time}
+A mixing bound in terms of the spectral gap will be shown in a fashion similar to that in
+continuous time. There seems to be no discrete-time analog of the modified log-Sobolev bound on relative entropy.
+
+In discrete time we consider two approaches to mixing time, both of which are equivalent. the first approach involves operator norms, and is perhaps the more intuitive of two methods.
+
+\begin{prop}
+  \begin{equation}
+    \label{eq:discrete_bound}
+    \tau_2(\epsilon) \leq \lceil \frac{1}{1-\|P^*\|} \log \frac{1}{\epsilon \sqrt{\pi_*}} \rceil
+  \end{equation}
+  where $\pi_* = \min_{x\in \Omega}\pi(x)$ and
+  $$\|P^*\|= \sup_{f:\Omega \rightarrow R, E f=0}\frac{\|P^*f\|_2}{\|f\|_2}$$
+This results has appeared in mixing time literature in many equivalent forms.
+
+  \begin{proof}
+  Since $k_{i+1}-1=P^*(k_i-1)$ and $E(k_i - 1)=0$ for all $i$ then
+  $$\|k_n-1 \|_2 = \|P^*\|^n\|k_0-1\|_2$$
+  Solving for when this expression drops to $\epsilon$ and using the approximations
+  $\log x\leq -(1-x)$ and $\|k_0-1\|_2\leq \sqrt{\frac{1-\pi_*}{\pi_*}} $ 
+  \end{proof}
+\end{prop}
+
+
+In above proposition, the mixing bound followed almost immediately from the definition. However, there is an alternate approach to this problem which bear more of a resemblance to the continuous time result and is more convenient for showing refined bounds.
+
+The discrete time analog of differentiating $Var(h_t)$ is take the difference 
+$Var(k_n)-Var(k_{n-1})$, or more generally, $Var(P^*f)-Var(f)$.
+
+\begin{lem}
+  Given Markov chain $P$ and function $f:\Omega \rightarrow R$, then
+  $$Var(P^*f)-Var(f) = -\mathcal{E}_{PP*}(f,f) \leq -Var(f)\lambda_{PP^*}$$.
+  \begin{lem}
+    Note, for any transition probability matrix $K$, $E_{\pi}f = E_{\pi}(Kf)$. Then
+$$Var(P^*f)-Var(f)=\langle P^*f,P^*f \rangle_{\pi} - \langle f,f \rangle_{\pi} 
+= -\langle f,(I-PP^*)f \rangle_{\pi}
+$$
+gives what we need.
+  \end{lem}
+\end{lem}
+
+
+\begin{cor}
+  A discrete time Markov chain $P$ satisfies 
+  \begin{equation}
+    \label{eq:discrere_bound_2}
+    \tau_2(\epsilon) \leq \lceil \frac{1}{\lambda_{PP^*}} \log \frac{1}{\epsilon \sqrt{\pi_*}} \rceil
+  \end{equation}
+
+  \begin{proof}
+    \begin{equation}
+      Var(k_n)\leq Var(k_0)(1-\lambda_{PP^*})^n
+    \end{equation}
+The result follows by solving for when variance drops to $\epsilon^2$ and using
+the approximation $\log(1-\lambda_{PP^*}) \leq -\lambda_{PP^*}$
+  \end{proof}
+\end{cor}
+
+It is preferable to work with $P$ instead of $PP^*$. Here are several simplifications make this possible.
+
+\begin{cor}
+In discrete time, a Markov chain with holding probability $\alpha$ satisfies
+  \begin{equation}
+        \tau_2(\epsilon) \leq \lceil \frac{1}{\alpha\lambda} \log \frac{1}{\epsilon \sqrt{\pi_*}} \rceil
+  \end{equation}
+For a reversible Markov chain,
+  \begin{equation}
+      \tau_2(\epsilon) \leq \lceil \frac{1}{1-\lambda_{max}} \log \frac{1}{\epsilon \sqrt{\pi_*}} \rceil   \leq \lceil \frac{1}{\min\{2\alpha,\lambda\}} \log \frac{1}{\epsilon \sqrt{\pi_*}} \rceil 
+  \end{equation}
+Where $\lambda_{max} = \max\{\lambda_1,|\lambda_{n-1}|\}$ when $\lambda_1 = 1 - \lambda$ is the largest non-trivial eigenvalue of $P$ and $\lambda_{n-1}\geq -1$ is the smallest eigenvalue. 
+\end{cor}
+
+Now we will show that those two approaches to bounding discrete mixing in this section are equivalent.
+\begin{prop}
+  \begin{equation}
+    \label{eq:two_same}
+    1 - \lambda_{PP^*} = \|P^* \|
+  \end{equation}
+    \begin{proof}
+      See the original paper, page 20.
+    \end{proof}
+
+\end{prop}
+
+
+\subsection{Does Reversibility matter?}
+Many mixing result were originally shown only in the context of a reversible Markov chain. We can actually avoid this requirement in most cases. However, there are still some cases that this requirement is necessary. In this section, some difference would be covered, and some classical results of reversible Markov chain will be illustrated.
+
+The difference between reversible and non-reversible results is most apparent when upper and lower bounds on distances are given. Let
+$$ d(n) = \max_x\|P^n(x,\cdot)-\pi(\cdot) \|_{TV}
+$$
+denotes the worst variation distance after $n$ steps. Then combining the above work, we have
+\begin{prop}
+  if $P$ is reversible:
+  \begin{equation}
+   \frac{1}{2}\lambda^n_{max} \leq d(n) \leq \frac{1}{2}\lambda^n_{max} \sqrt{\frac{1-\pi_*}{\pi_*}}     
+  \end{equation}
+if $P$ is non-reversible:
+  \begin{equation}
+    x
+  \end{equation}
+\end{prop}
+
+\begin{lem}
+  If $P$ is reversible and irreducible on state space of size $|\Omega|=n$, then it has a complete spectrum of real eigenvalues with magnitudes at most one, that is
+  \begin{equation}
+    \label{eq:eigenvalue}
+    1 = \lambda_0 \geq \lambda_1 \geq \ldots \geq \lambda_{n-1} \geq -1.
+  \end{equation}
+\end{lem}
+
+The Courant-Fischer theorem show the connection between eigenvalues and 
+Dirichlet forms for a reversible Markov chain.
+
+\begin{lem}
+  In a reversible Markov chain the second largest eigenvalue $lambda_1$ and the smallest 
+eigenvalue $\lambda_{n-1}$ satisfy
+\begin{equation}
+  1 - \lambda_1 = \inf_{Var(f)\neq 0}\frac{\mathcal{E}(f,f)}{Var(f)} = \lambda
+\end{equation}
+\begin{equation}
+  1 + \lambda_{n-1} = \inf_{Var(f)\neq 0}\frac{\mathcal{F}(f,f)}{Var(f)} = \lambda
+\end{equation}
+Where 
+$$\mathcal{F}(f,f) = \langle f,(I+P)f\rangle_{\pi}$$
+\begin{proof}
+  See the original paper, page 25.
+\end{proof}
+\end{lem}
+
+\section{Advanced Functional Techniques}
+In this section, it is shown that information on function of large variance, or on functions with small support, can be exploited to show better mixing time bounds.
+
+The argument is simple. Recall that we have $\frac{d}{dt}Var(h_t)=-2\mathcal{E}(h_t,h_t)$. If 
+$\mathcal{E}(f,f)\geq G(Var(f))$ for some $G : R_+\rightarrow R_+$ and $f : \Omega \rightarrow R_+$ with $Ef=1$, the it follows that $\frac{d}{dt}Var(h_t)=-2\mathcal{E}(h_t,h_t)\leq -2 G(Var(f)) $, so we have the following inequality:
+\begin{equation}
+  \label{eq:inte_ineq}
+  \tau_2(\epsilon) = \int_0^{\tau_2(\epsilon)}1dt \leq \int_{Var(h_0)}^{\epsilon^2}\frac{dI}{-2G(I)}
+\end{equation}
+
+When $G(r) = \lambda r$, it simply gives the bound we got in previous chapter. More generally, in this chapter we derive such functions $G$ in terms of the log-Sobolev constant, Nash inequalities, spectral profile, or via comparison to another Markov chain.
+
+In the discrete time, replace  $\frac{d}{dt}Var(h_t)=-2\mathcal{E}(h_t,h_t)$ with $Var(k_n)-Var(k_{n-1}) = -\mathcal{E}_{PP*}(k_n,k_n)$(\tiny is it correct? shouldn't it be $k_{n-1}$)\normalsize.
+Then if $\mathcal{E}_{PP*}(f,f)\geq G_{PP^*}(Var(f))$, and $I(n)=Var(k_n)$ and $G_{PP^*}(r)$ are non-decreasing, the piecewise linear extension of $I(n)$ to $t\in R_+$ will satisfy
+\begin{equation}
+  \label{eq:discrete_ineq}
+  \frac{dI}{dt}\leq -G_{PP^*}(I).
+\end{equation}
+Then
+\begin{equation}
+ \tau_2(\epsilon) = \int_0^{\tau_2(\epsilon)}1dt \leq \int_{Var(h_0)}^{\epsilon^2}\frac{dI}{-G_{PP^*}(I)} 
+\end{equation}
+Since we have 
+$$\mathcal{E}_{PP^*}(f,f)\leq 2\alpha\mathcal{E}(f,f) \leq 2\alpha G(Var(f)) 
+$$
+then we may take $G_{PP^*}(r)=2\alpha G(r)$
+
+\subsection{Log-Sobolev and Nash Inequalities}
+Some of the best bounds on $L^2$ mixing times were shown by use of the log-Sobolev constant. Following is a example. (But I can't talk about what's the bound is in this case).
+\begin{example}
+  A matroid $\mathcal{M}$ is given by a ground set $E(\mathcal{M})$ with 
+$|E(\mathcal{M})|=n$ and a collection of bases $\mathcal{B(M)}\subseteq 2^{\mathcal{B(M)}}$
+. The bases $\mathcal{B(M)}$ must all have the same cardinality $r$, and $\forall X,Y\in \mathcal{B(M)}, \forall e\in X, \exists f\in Y : X\cup\{f\}\setminus \{e\}\in \mathcal{B(M)}$. One choice of a Markov chain on matroids is, given state $X\in \mathcal{B(M)}$ half the time do nothing, and otherwise choose $e\in X, f\in \mathcal{B(M)}$ and transition to state $X-e+f$ if it is also a basis.
+\end{example}
+
+Equation \eqref{eq:inte_ineq} and \eqref{eq:discrete_ineq} will bound mixing time in terms of log-Sobolev constant if we can show a relation between the Dirichlet form and a function of the variance. The following lemma establishes this connection.
+
+\begin{lem}
+  If $f$ is non-negative then
+$$
+Ent(f^2) \geq Ef^2 \log \frac{Ef^2}{(Ef)^2}
+$$
+and in particular, if $Ef=1$ then 
+$$
+\mathcal{E}(f,f) \geq \rho Ent(f^2) \geq \rho (1 + Var(f))\log (1 + Var(f)).
+$$
+
+\begin{proof}
+  See the original paper on page 29.
+\end{proof}
+\end{lem}
+
+In some case, Nash inequality can be used to supplement the log-Sobolev result and improve the bound. Unfortunately, however, Nash inequalities are notoriously difficult to establish. We now show that the Dirichlet form can also be lower bounded in terms of variance by using Nash inequality.
+
+\begin{lem}
+  Given a Nash Inequality
+$$
+\|f\|_2^{2+1/D} \leq C \bigg [ \mathcal{E}(f,f)+\frac{1}{T}\|f\|_2^2 \bigg] \|f\|1^{1/D}
+$$
+which holds for every function $f: \Omega \rightarrow R$ and some constants $C,D,T\in R_+$, then whenever $f\geq 0$ and $Ef=1$ then
+$$
+\mathcal{E}(f,f) \geq (1 + Var(f)) \bigg ( \frac{(1+Var(f))^{1/D}}{C} - \frac{1}{T} \bigg )
+$$
+\begin{proof}
+  Simply rewrite the inequality and use the facts that $\|f\|_1 = 1$ and  $Var(f) = \|f\|_2^2-1$.
+\end{proof}
+\end{lem}
+
+\subsection{Spectral profile}
+In previous section it was found that log-Sobolev bounds on mixing time can on spectral gap results, by replacing the $\log(1/\pi_*)$ term with $\log\log(1/\pi_*)$. However, the log-Sobolev is much more difficult to bound than the spectral gap and, to date, bounds on it are know for only a handful of problems. Moreover, sometimes even log-Sobolev is not strong enough. In this section, the method of Spectral Profile will be introduced. The main idea is to improve the basic relation $\mathcal{E}(f,f)\geq \lambda Var(f)$ by considering the support of $f$.
+
+\begin{definition}
+  For a non-empty subset $S \subset \Omega$ the first Dirichlet eigenvalue on $S$ is given by
+  \begin{equation}
+    \label{eq:spectral_profile}
+    \lambda_1 (S) = \inf_{f\in c_0^+(S)}\frac{\mathcal{E}(f,f)}{Var(f)}
+  \end{equation}
+where $c_0^+(S) = \{f\geq 0: supp (f)\subset S\}$ is the set of non-negative function supported on $S$. The spectral profile $\Lambda : [\pi_*,\infty)\rightarrow R$ is given by
+$\Lambda (r) = \inf_{\pi_*\leq \pi(S) \leq r}\lambda_1 (S)$
+\end{definition}
+
+The spectral profile is a natural extension of spectral gap $\lambda$, and will we now see that it can improve on the basic bound $\mathcal{E}(f,f)\geq \lambda Var(f)$ used earlier.
+
+\begin{lem}
+  For every non-constant function $f:\Omega \rightarrow R_+$
+  \begin{equation}
+    \label{eq:new_bound}
+    \mathcal{E}(f,f) \leq \frac{1}{2} \Lambda \bigg ( \frac{4(Ef)^2}{Var f} \bigg)Var(f)
+  \end{equation}
+
+  \begin{proof}
+    Proof can be founded in the original paper, page 35. I can also talk about that.
+  \end{proof}
+\end{lem}
+
+Applying this formula together with \eqref{eq:inte_ineq}, we obtain following inequality.
+$$
+\tau_2(\epsilon) \leq \int_{Var(h_0)}^8 \frac{dI}{-I\Lambda(4/I)} + \int_8^{\epsilon^2}\frac{dI}{-2\lambda I}
+$$
+Let $\sigma$ be the initial distribution, and let $h_0(x)=\frac{\sigma(x)}{\pi(x)}$, a change of variables to $r = 4/I$ gives the mixing time bound (in continuous time).
+\begin{equation}
+  \label{eq:prof_bound}
+  \tau_2(\epsilon) \leq \int_{4/Var(\sigma/\pi)}^{1/2} \frac{dr}{r\Lambda(r)} + \frac{1}{\lambda} \log \frac{2\sqrt{2}}{\epsilon}
+\end{equation}
+Similar things can be done in discrete-time case.
+
+The theorem, with the trivial bound $\Lambda(r)\geq \lambda$ sometimes produces worse bound than we got in previous chapter, however, when $\Lambda(r) \gg \lambda$ when $r$ are small, we could expect the obtain sharper bound.
+
+Spectral profile is a fairly new tool, and it has not been widely studied yet. However, some researchers still got some results to bound spectral profile, for example, it can be shown that log-Sobolev constant and a Nash inequality induce the following lower bounds:
+$$
+\Lambda(r) \geq \rho \frac{\log(1/r)}{1-r}
+$$
+and 
+$$
+\Lambda(r) \geq \frac{1}{Cr^{1/2D}} - \frac{1}{T}.
+$$
+
+\subsection{Comparison methods}
+It sometimes happened that a Markob chain is difficult to study, but a related chain is more manageable. In this situation, the comparison method has been widely used to bound spectral gap, log-Sobolev constant and Nash inequalities.
+
+Before deriving comparison results for the quantities in this chapter, a preliminary result is needed.
+
+\begin{thm}
+  Consider two Markov chains $P$ and $\hat{P}$ on the same state space $\Omega$, and for every $x\neq y \in \Omega$ with $\hat{P}(x,y)\geq 0$ define a directed path $\gamma_{xy}$ from $x$ to $y$ along edges in $P$. Let $\Gamma$ denote the set of all such paths. Then
+  \begin{equation}
+    \label{eq:2.14}
+    \mathcal{E}_P(f,f)\geq \frac{1}{A}\mathcal{E}_{\hat{P}}(f,f),
+  \end{equation}
+  \begin{equation}
+    \mbox{Var}_{\pi}(f)\leq M \mbox{Var}_{\hat{\pi}}(f),~
+    \mbox{Ent}_{\pi}(f^2)\leq M \mbox{Ent}_{\hat{\pi}}(f^2)
+  \end{equation}
+Where $M=\max_x\frac{\pi(x)}{\hat{\pi}(x)}$, and
+$$
+A = A(\Gamma) = \max_{a \neq b;P(a,b)\neq 0}\frac{1}{\pi(a)P(a,b)}\sum_{x\neq y;(a,b)\in \gamma_{xy}}
+\hat{\pi}(x)\hat{P}(x,y)|\gamma_{xy}|
+$$
+\begin{proof}
+  see page 39 in original paper.
+\end{proof}
+\end{thm}
+
+\begin{cor}
+$$  
+\lambda_P\geq \frac{1}{MA}\lambda_{\hat{P}},~\rho_P\geq \frac{1}{MA}\rho_{\hat{P}},~ \Lambda_P(r)\geq \frac{1}{MA}\Lambda_{\hat{P}}(r) 
+$$
+\end{cor}
+
+In the case of a reversible chain, it is also possible to compare $\lambda_{n-1}$ if the paths are of odd length. First, consider the preliminary result.
+
+\begin{thm}
+  Consider two Markov chains $P$ and $\hat{P}$ on the same state space $\Omega$, and for every $x\neq y \in \Omega$ with $\hat{P}(x,y)\geq 0$ define a directed path $\gamma_{xy}$ of odd length $|\lambda_{x,y}|$ from $x$ to $y$ along edges in $P$. Let $\Gamma^*$ denote the set of all such paths. Then
+  \begin{equation}
+    \label{eq:2.16}
+    \mathcal{F}_P(f,f)\geq \frac{1}{A^*}\mathcal{F}_{\hat{P}}(f,f),
+  \end{equation}
+Where $M=\max_x\frac{\pi(x)}{\hat{\pi}(x)}$, and
+$$
+A^* = A^*(\Gamma^*) = \max_{a \neq b;P(a,b)\neq 0}\frac{1}{\pi(a)P(a,b)}\sum_{x\neq y;(a,b)\in \gamma_{xy}}
+\hat{\pi}(x)\hat{P}(x,y)|\gamma_{xy}|r_{xy}(a,b)
+$$  
+where $r_{xy}(a,b)$ is the number of times the edge $(a,b)$ appears in path $\gamma_{xy}$.
+\end{thm}
+If $P$ and $\hat{P}$ are reversible then
+$$
+1 - \lambda_{max}(P) \geq \frac{1}{MA^*}(1-\lambda_{max}(\hat{P}))
+$$
+
+The most widely used example of these comparison results is the ”canonical path theorem“
+\begin{cor}
+Given a Markov chain $P$ on state space $\Omega$, and directed paths $\lambda_{xy}$ between every pair of vertices $x\neq y \in \Omega$, then
+$$
+\lambda \geq (\max_{a \neq b;P(a,b)\neq 0}\frac{1}{\pi(a)P(a,b)}\sum_{x\neq y;(a,b)\in \gamma_{xy}}
+\pi(x)\pi(y)|\gamma_{xy}|)^{-1}
+$$
+\begin{proof}
+  Let $\hat{P}(x,y)=\pi(y), \hat{\pi}=\pi$, then $M=1$, note that
+$$
+\mathcal{E}_{\hat{P}}(f,f) = \frac{1}{2}\sum_{x,y\in \Omega}(f(x)-f(y))^2\pi(x)\pi(y)=\mbox{Var}_{\pi}(f).
+$$
+\end{proof}
+\end{cor}
+
+\begin{cor}
+    Consider two Markov chains $P$ on the  state space $\Omega$, and a set of cycles $\gamma_x$ of odd length from each vertex $x\in \Omega$ to itself. Then the smallest eigenvalue $\lambda_{n-1}$ of $P$ satisfies the relation
+$$
+1+\lambda_{n-1} \geq 2\bigg (\max_{a \neq b;P(a,b)\neq 0}\frac{1}{\pi(a)P(a,b)}\sum_{x\neq y;(a,b)\in \gamma_{xy}}
+\pi(x)|\gamma_{xy}|r_{xy}(a,b)\bigg)^{-1}
+$$
+
+\end{cor}
+
+
+\begin{thebibliography}{99} % don't worry about the 99
+
+\bibitem{Book1}
+Montenegro, Ravi, and Prasad Tetali. \textbf{\emph{Mathematical aspects of mixing times in Markov chains.}} Now Pub, 2006.
+
+\bibitem{Book2}
+Stein, Elias M., and Rami Shakarchi. \textbf{\emph{Real analysis: measure theory, integration, and Hilbert spaces}}. Vol. 3. Princeton University Press, 2010.
+
+\end{thebibliography}
+
+\end{document}
