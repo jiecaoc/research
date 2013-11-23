@@ -15,8 +15,7 @@
 \newtheorem{definition}[thm]{Definition}
 { \theoremstyle{remark}\newtheorem*{remark}{Remark} }
 
-\newcommand{\class}{MATH 613E: Topics in Analytic Number Theory}
-\newcommand{\population}[2]{There are #2 students giving lectures, and also #2 students writing up notes from lectures. Everybody in the class is very #1 about this.}
+
 \newcommand{\tex}{{\tt .tex}}
 
 %\newenvironment{definition}[1][Definition]{\begin{trivlist}
@@ -24,22 +23,161 @@
 
 \begin{document}
 
-\title[Short version of title]{Summary : \\ \small \emph{Mathematical Aspects of Mixing Times in Markov Chain}}
+\title[Short version of title]{Notes on \\ \small \emph{Statistical Learning Theory}}
 % or if you want, simply \title{Title of the article}
 \author{Jiecao Chen \\ \tiny jieca001@umn.edu }
 
 \maketitle
 
 \begin{abstract}
-In is paper, important concepts and basic idea from \textit{Mathematical Aspects of Mixing Times in Markov Chains} will be covered.
+Most results of statistical learning theory take the form
+of so-called error bounds. This note contains introduction and
+brief summary of some key ideas and techniques to obtain those
+result.
 \end{abstract}
 
-\section{Basic Bound on Mixing Times}
-\label{math}
+\section{Introduction}
+The main goal of statistical learning theory is to 
+provide a framework for studying the problem of inference,
+which includes gaining knowledge, making prediction or 
+constructing models from the date set. As it is put into 
+a statistical framework, that is there are assumptions
+of statistical nature about the underlying phenomena.
 
-\subsection{Preliminaries: Distance and mixing times}
+V. Vapnik once described why we need theories:
+\begin{quote}
+	\textit{Nothing is more practical than a good theory}.
+\end{quote}
 
-Let $(\Omega,P,\pi)$ denote Markov kernel of a finite Markov chain on a finte state
+A theory of interference should be able to give the 
+formal definition of words such as learning, generalization,
+overfitting and also to characterize the performance of 
+learning algorithms so that it would eventually be able to
+help us to design better learning algorithms.
+
+\textbf{Two goals:} make things more precise and derive new or improved
+algorithms
+
+\subsection{Learning and Inference}
+The process of inductive inference:
+\begin{itemize}
+\item Observe a phenomenon
+\item Construct a model of that phenomenon
+\item Make predictions using this model
+\end{itemize}
+The task of Machine Learning is to actually \textit{automate} this 
+process and the goal of Learning Theory is to \textit{formalize} it.
+
+
+To make our discussion simpler, in this note, we only consider
+a special case of above process which is the supervised learning 
+framework for pattern recognition. In this special case, data set
+consists of instance-label pairs, where the value of label $\in \{-1, 1\}$. The task of a learning algorithm is to construct a function which is able to predict the corresponding label given the instance. A "Good" learning algorithm will give less errors when do such prediction.
+
+A model that can exactly fit all instance-label pairs in a training
+data set may not always be the best model, as we know that the data set may sometime include noise, in such case, a model fitting all the data may give a worse prediction in the unseen data, such phenomenon is usually referred to as \textbf{overfitting}. A way to overcome \textbf{overfitting} is to look for \textbf{regularities}.
+
+If there are many models available, and all of the well fit the data, we normally follow Occam's idea to choose the simplest model, which would more likely to be generalized from the training data to future data. This immediately raises the question of how to 
+measure and qualify simplicity of a model.
+
+There is no universal way of measuring simplicity and the 
+choice of a specific measure inherently depends on the 
+problem at hand.
+
+A formula we believe:
+\begin{quote}
+	\textit{Generalization = Data + Knowledge}
+\end{quote}
+
+Generalization can only come when one adds specific knowledge to 
+the data. Each learning algorithm encodes specific knowledge.
+
+\subsection{Assumptions}
+Several more precise assumptions that made by the Statistical
+Learning Theory Framework:
+
+\begin{itemize}
+\item Probabilistic model of the phenomenon (or data generation process). Within this model, the relationship between past and
+future observations is that they both are sampled independently
+from the same distribution (i.i.d).
+
+\end{itemize}
+
+
+\section{Formalization}
+Consider an input space $\mathcal{X}$ and output space $\mathcal{Y}$. As we only consider our specific case (binary classification), we choose $\mathcal{Y} = {-1, 1}$.
+
+$(X, Y) \in \mathcal{X}\times\mathcal{Y}$
+are random variables follow the an unknown distribution $P$.  
+We observe a sequence of i.i.d pairs $(X_i, Y_i)$ sampled according to $P$ and the goal is to construct a function
+$g: \mathcal{X} \rightarrow \mathcal{Y}$ which can predict
+$Y$ from $X$.
+
+A criterion is need to choose the function $g$. It can be
+chosen as $P(g(X) \neq Y)$. We thus define the \textit{risk} of $g$ as
+\begin{equation}
+	R(g) = 	P(g(X) \neq Y) = \mathbb{E}[\mathbb{I}_{g(X)\neq Y}]
+\end{equation}
+
+Note that $P$ can be decomposed as $P_X \times P(Y|X)$. Define the \textit{regression function} $\eta(x) = \mathcal{E}[Y|X=x] = 2\mathcal{P}[Y=1|X=x] - 1$ and the
+\textit{target function} (or Bayes classifier) $t(x) = sgn \eta(x)$. This function achieves the minimum risk over all
+possible measurable functions:
+\begin{equation}
+	R(t) = \inf_g R(g)
+\end{equation}
+Denote the value $R(t)$ as $R^*$, called the Bayes risk.
+
+Define the \textit{noise level} as $s(x) = \min(\mathbb{P}[Y=1|X=x], 1 - \mathbb{P}[Y=1|X=x]) = (1-\eta(x))/2$ and this gives $R^* = \mathbb{E}s(X)$.
+
+Our goal is thus to find this function $t$. but since $P$ is unknown we cannot directly measure the risk. Let's define \textit{empirical risk}:
+\begin{equation}
+	R_n(g) = \frac{1}{b} \sum_{i=1}^n \mathbb{I}_{g(X_i)\neq Y_i}
+\end{equation} 
+It is common to use this quantity as a criterion to select an estimate of $t$.
+
+
+\subsection{Algorithms}
+
+\textbf{Overfitting}. When the input space is infinite, one can always construct a function $g_n$ which perfectly predicts the labels of the training data but behaves on the other points as the opposite of the target function $t$. So one would have minimum empirical risk but maximum risk.
+
+There are essentially two ways to prevent this overfitting situation:
+\begin{itemize}
+\item restrict the class of functions in which the minimization is performed 
+\item modify the criterion to be minimized (e.g. adding a penalty for complicated function)
+\end{itemize}
+
+\textbf{Empirical Risk Minimization}. This algorithm is one of the most straightforward, yet it is usually efficient:
+\begin{equation}
+	g_n = arg \min_{g\in \mathcal{G}} R_n(g)
+\end{equation}
+where $\mathcal{G}$ is the function class we perform minimization.
+
+Sometime (actually in most case) the \textit{best} function in $\mathcal{G}$ is not necessary the overall best function. So one may want to enlarge the model as much as possible, while preventing overfitting.
+
+\textbf{Structural Risk Minimization}.
+An infinite sequence $\{\mathbf{G_d} | d=1, 2, \ldots \}$ of models of increasing size:
+\begin{equation}
+	g_n = arg \min_{g\in \mathcal{G}_d, d\in\mathcal{N}} R_n(g) + \text{pen}(d,n)
+\end{equation}
+
+The penalty $\text{pen}(d,n)$ gives preference to models where estimation error is small and measures the size of capacity of the model.
+
+
+
+\textbf{Regularization}. Another, usually easier to implement approach consists in choosing a large model $\mathcal{G}$ and define on $\mathcal{G}$ a \textit{regularizer}, typically a norm $\|g\|$:
+\begin{equation}
+	g_n = arg \min_{g\in \mathcal{G}} R_n(g) + \lambda \|g\|^2
+\end{equation}
+
+
+
+
+
+
+
+
+
+Let $(\Omega,P,\pi)$ denote Markov kernel of a finite Markov chain on a finite state
 space $\Omega$ with a unique invariant measure $\pi$. That is 
 \[ P(x,y)\leq 0, \forall x,y \in \Omega, and~ \sum_{y\in \Omega}P(x,y)=1, \forall x\in \Omega
 \] 
