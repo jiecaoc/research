@@ -264,7 +264,10 @@ The algebra of regular expressions use constants and variables that denote langu
 Here are some facts:
 \begin{itemize}
 	\item Every language defined by one of these automata is also definted by a regular expression. For the proof, we can assume the language is accepted by some DFA.
-	\item Every language definted by a regular expression is definted by one of these automata. For this part of th proof, the easiest is to show that there is a NFA with $\epsilon-$transitions accepting the same language. The following figure shows all the equivalences we mentioned:
+	\item Every language definted by a regular expression is definted by one of these automata. For this part of th proof, the easiest is to show that there is a NFA with $\epsilon-$transitions accepting the same language. 
+\end{itemize}
+	
+The following figure shows all the equivalences we mentioned:
 	
 \begin{center}
 	\includegraphics[width=0.5\textwidth]{equal}
@@ -272,7 +275,119 @@ Here are some facts:
 	\textit{The equivalence of four different notations for regular languages}
 \end{center}
 	
+
+
+\subsection{Algebraic Laws for Regular Expressions}
+\subsubsection{Associativity and Commutativity}
+\begin{itemize}
+	\item $L + M = M + L$.
+	\item $(L + M) + N = L + (M + N)$
+	\item $(LM)N = L(MN)$
 \end{itemize}
+All above properties could directly derived from the definitions of those operators.
+
+\subsubsection{Identities and Annihilators}
+\begin{itemize}
+	\item $\emptyset + L = L + \emptyset$
+	\item $\epsilon L = L \epsilon = L$
+	\item $\emptyset L = L \emptyset = \emptyset$
+\end{itemize}
+
+\subsubsection{Distributive Laws}
+\begin{itemize}
+	\item $L(M + N) = LM + LN$
+	\item $(M + N)L = ML + NL$
+\end{itemize}
+\begin{thm}
+	If $L$, $M$, and $N$ are any languages, then
+	$$
+		L(M\cup N) = LM \cup LN
+	$$
+\end{thm}
+
+\subsubsection{The Idempotent Law}
+\begin{itemize}
+	\item $L + L = L$
+\end{itemize}
+
+\subsubsection{Laws Involving Closures}
+\begin{itemize}
+	\item $(L^*)^* = L^*$
+	\item $\emptyset^* = \epsilon$
+	\item $\epsilon^* = \epsilon$
+	\item $L^+ = LL^*$
+	\item $L? = \epsilon + L$. This rule is really the definition of the $?$ operator.
+\end{itemize}
+
+\subsubsection{Discovering Laws for Regular Expressions}
+\begin{lem}
+	If $L$ and $M$ are two languages, then
+	$$
+		(L + M)^* = (L^*M^*)^*
+	$$
+\end{lem}
+This is a key lemma that will make many proofs related to regular language easier.
+
+\begin{thm}
+	\label{replaceThm}
+	Let $E$ be a regular expression with variables $L_l, L_2\ldots,L_m$ Form concrete regular expression $C$ by replacing each occurrence of $L_i$ by the symbol $a_i$, for $i = 1,2,\ldots,m$. Then for any languages $L_1, L_2,\ldots, L_m$, every string $w$ in $L(E)$ can be written $w=w_1w_2\ldots w_k$, where each $w_i$ is in one of
+the languages, say $L_{j_i}$, and the string $a_{j_l}a_{j_2}\ldots a_{j_k}$ is in the language $L(C)$. 
+\end{thm}
+
+
+\subsubsection{The Test for a Regular-Expression Algebraic Law}
+Now, we can state and prove the test for whether or not a law of regular expressions is true. The test for whether $E=F$ is tre, where $E$ and $F$ are two regular expressions with the same set of variables is:
+\begin{enumerate}
+	\item Convert $E$ and $F$ to concrete regular expression $C$ and $D$, respectively, by replacing each variable by a concrete symbol.
+	\item Test whether $L(C) = L(D)$. If so, then $E=F$ is a true law, and if not, then the "law" is false. Note, for now we still don't know how to test for whether two regular expressions denote the same language, we will talk it later.
+\end{enumerate}
+Above test is can be proved to be true based on theorem \ref{replaceThm}.
+
+\begin{example}
+	Consider the prospective law $(L+M)^* = (L^*M^*)^*$, to prove it, we only need to prove $(a+b)^* = (a^*b^*)^*$.
+\end{example}
+
+
+\section{Properties of Regular Language}
+\subsection{Proving Languages Not to Be Regular}
+We have established that the class of languages know as the regular languages have at least four different descriptions. They are the languages defined DFA's, by NFA's, and by $\epsilon-$NFA's; they are also the languages definted by regular expressions.
+
+Not all language is a regular language. We will introduce a powerful technique, known as the "pumping lemma", for showing certain languages not to be regular. Several examples of nonregular languages will also be presented.
+
+\subsubsection{The Pumping Lemma for Regular Languages}
+A example of nonregular language $L_{01} = \{ 0^n1^n | n \geq 1\}$.
+\begin{thm}: \textbf{(The pumping lemma for regular languages)} 
+Let $L$ be a regular language. Then there exists a constant $n$ (which depends on $L$) such that for every string $w$ in $L$ such that $|w|\geq n$, we can break $w$ into three strings, $w=xyz$ such that:
+\begin{enumerate}
+	\item $y \neq \epsilon$
+	\item $|xy| \leq n$
+	\item For all $k \geq 0$, the string $xy^kz$ is also in $L$
+\end{enumerate}
+That is, we can always find a nonempty string $y$ not too far from the beginning of $w$ that can be "pumped"; that is, repeating $y$ any number of times, or deleting it (the case $k=0$), keeps the resulting string in the language $L$.
+\end{thm}
+This is one of the theorems that could in many cases give the proof that a nonregular language is truly could not be accepted by a DFA.
+
+
+\subsection{Closure Properties of Regular Languages}
+In this section, we will show several theorems of the form "if certain languages are regular, and a language $L$ is formed from them by certain operations" (e.g., $L$ is the union of two regular languages), then $L$ is also regular". Those theorems are often called \textit{closure properties} of the regular languages, since they show that the class of regular languages is closed under the operation mentioned.
+
+Here is a summary of the principal operations that meet the \textit{closure properties}.
+\begin{itemize}
+	\item union
+	\item star
+	\item complementation
+	\item difference of two regular languages
+	\item the reversal of a regular language
+	\item A homomorphism (e.g. substitution of strings for symbols)
+	\item The inverse homomorphism of a regular language is regular.
+\end{itemize}
+
+\begin{thm}\textbf{(complementation)}
+	If $L$ is a regular language over alphabet $\Sigma$, then $\overline{L} = \Sigma^*-L$ is also a regular language.
+\end{thm}
+
+\subsection{Decision Properties of Regular Languages}
+
 
 
 \begin{thebibliography}{99} % don't worry about the 99
