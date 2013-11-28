@@ -24,475 +24,226 @@
 
 \begin{document}
 
-\title[Short version of title]{Notes on \\ \small \emph{Statistical Learning Theory}}
+\title[Short version of title]{Reading Notes on \\ \small \emph{Automata Theory Language and Computation}}
 % or if you want, simply \title{Title of the article}
 \author{Jiecao Chen \\ \tiny jieca001@umn.edu }
 
 \maketitle
-
 \begin{abstract}
-Most results of statistical learning theory take the form
-of so-called error bounds. This note contains introduction and
-brief summary of some key ideas and techniques to obtain those
-results. Most results come from \cite{paper1}, \cite{Book2}, \cite{paper3}.
+This will be a reading note on the book \textit{Introduction to Automata Theory Languages and Computation}. It consists of both the content from the book and my own thinking based on those content. 
 \end{abstract}
+\tableofcontents
 
-\section{Introduction}
-The main goal of statistical learning theory is to 
-provide a framework for studying the problem of inference,
-which includes gaining knowledge, making prediction or 
-constructing models from the date set. As it is put into 
-a statistical framework, that is there are assumptions
-of statistical nature about the underlying phenomena.
+\section{Automata: The Methods and the Madness}
+\subsection{Why study Automata Theory}
+This section serves to introduce the principal motivation and also outlines the major topics covered in book \cite{book1}.
 
-V. Vapnik once described why we need theories:
+\subsubsection{Introduction to Finite Automata}
+Here are some examples that Finite Automata will be used
+\begin{itemize}
+	\item Software for designing and checking the behavior of digital circuits.
+	\item The "lexical analyzer" of a typical compiler, that is, the compiler component that breaks the input text into logical units, such as identifiers, keywords, and punctuation.
+	\item Software for scanning large bodies of text, such as collections of Web pages, to find occurrences of words, phrases, or other patterns.
+	\item Software for verifying system of all types that have a finite number of distinct states, such as communications protocols or protocols for secure exchange of information.
+\end{itemize}
+
+\subsubsection{Structural Representations}
+There are two important notations that are not automation-like, but play an important role in the study of automata and their applications.
+
+\begin{itemize}
+	\item \textit{Grammars} are useful models when designing software that processes data with a recursive structure. The "best-know" example is a "parser", the component of a compiler that deals with the recursively nested features of the typical programming language, such as expressions -- arithmetic, conditional, and so on. For instance, a grammatical rule like $E \Rightarrow E + E$ states that an expression can be formed by taking any two expressions and connecting them by a plus sign; this rule is a typical of how expressions of real programming language are formed. Context-free grammars may be covered later (which was first formulated by one of the best-known scholar, \textit{Avram Noam Chomsky}). 
+	\item \textit{Regular Expressions} also denote the structure of data, especially text strings. The text described by \textit{regular expressions} is exactly same as what can be described by finite automata.
+\end{itemize}
+
+\subsubsection{Automata and Complexity}
+Automata are essential for the study of the limits of computation. There are two important issues:
+\begin{itemize}
+	\item What can a computer do at all? This study is called "decidability", and the problems that can be solved by computer are called "decidable".
+	\item What can a computer do efficiently? This study is called "intractability", and the problems that can be solved by a computer using no more time than some slowly growing function of the size of the input are called "tractable". Often, full polynomial functions are considered to be "slowly growing" while function that grow faster than than any polynomial are deemed to grow too fast.
+\end{itemize}
+
+
+
+\subsection{The Central Concepts of Automata Theory}
+This section will give the definitions of most important terms that pervade the theory of automata.
+
+\subsection{Alphabets}
+An alphabet is a finite, nonempty set of symbols. Conventionally, we use the symbol $\Sigma$ for an alphabet. Common alphabets include:
+\begin{itemize}
+	\item $\Sigma = \{0,1\}$, the binary alphabet
+	\item $\Sigma = \{a, b, \ldots, z\}$, the set of all lower-case letters.
+	\item The set of all ASCII characters, or the set of all printable ASCII characters.
+\end{itemize}
+
+\subsubsection{Strings}
+A \textit{string} (or sometimes \textit{word}) is a finite sequence of symbols chosen from some alphabet. For example, $01010$ is a string from the binary alphabet $\Sigma = \{0,1\}$.
+
+\textbf{The Empty String}
+The \textit{empty string} is the string with zero occurrences of symbols. This string is normally denoted as $\epsilon$.
+
+\textbf{Length of a String}
+Then \textit{length} of string $w$ Normally denoted as $|w|$. 
+
+\textbf{Power of an Alphabet}
+$\Sigma^k = \{w \big | |w| = k ~\mbox{and}~ w~ \mbox{is a string from} ~\Sigma \} $.
+
+Here are several related concepts:
+\begin{itemize}
+
+	\item $\Sigma^* = \Sigma^0 \cup \Sigma^1 \cup \Sigma^2 \cup \ldots$
+
+	\item $\Sigma^+ = \Sigma^1 \cup \Sigma^2 \cup \ldots$
+\end{itemize}
+
+\textbf{Concatenation of Strings}
+Let $x$ and $y$ be strings, then $xy$ denotes the \textit{concatenation} of $x$ and $y$.
+
+\textbf{Languages}
+If $\Sigma$ is an alphabet, and $L \subseteq \Sigma^*$, then $L$ is a \textit{language over} $\Sigma$. 
+
+\subsubsection{Problems}
+If $\Sigma$ is an alphabet, and $L$ is a language over $\Sigma$, then the problem $L$ is:
 \begin{quote}
-	\textit{Nothing is more practical than a good theory}.
+	Give a string $w$ in $\Sigma^*$, decide whether or not $w$ is in $L$.
 \end{quote}
+It turns out that anything we more colloquially called a "problem" can be expressed as membership in a language.
 
-A theory of interference should be able to give the 
-formal definition of words such as learning, generalization,
-overfitting and also to characterize the performance of 
-learning algorithms so that it would eventually be able to
-help us to design better learning algorithms.
 
-\textbf{Two goals:} make things more precise and derive new or improved
-algorithms
 
-\subsection{Learning and Inference}
-The process of inductive inference:
+\section{Finite Automata}
+\subsection{Definition of a Deterministic Finite Automaton}
+A \textit{deterministic finite automaton} consists of:
 \begin{itemize}
-\item Observe a phenomenon
-\item Construct a model of that phenomenon
-\item Make predictions using this model
-\end{itemize}
-The task of Machine Learning is to actually \textit{automate} this 
-process and the goal of Learning Theory is to \textit{formalize} it.
+	\item A finite set of states, often denoted $Q$
+	\item A finite set of \textit{input symbols}, often denoted as $\Sigma$
+	\item A \textit{transition function} that takes as arguments a state and an input symbol and returns a state. The function will commonly be denoted $\delta$. 
+	\item A \textit{start state}, one of the states in $Q$
+	\item A set of \textit{final} or accepting states $F$. The set is a subset of $Q$.
+\end{itemize}	
+A deterministic finite automaton will often be referred to by its acronym: DFA. The most succinct representation of a DFA is a listing of the five components above. In proofs we often talk about a DFA in "five-tuple" notation:
+$$
+	A = (Q, \Sigma, \delta, q_0, F)
+$$
+where $A$ is the name of the DFA, $Q$ is its set of states, $\Sigma$ its input symbols, $\delta: Q\times\Sigma \mapsto Q$ its transition function, $q_0$ its start state, and $F$ its set of accepting states.
+A example:
+\begin{example}
+	$A = (\{q_0, q_1, q_3\}, \{0,1\}, \delta, q_0, \{q_1\})$
+\end{example}
+One thing should be mentioned is that the transition could also be extended to $\hat{\delta}:Q\times\Sigma^+\mapsto Q$, i.e. it takes a state and a string as input then gives a state as a output.
+
+Following picture will be a informal illustration of a DFA.
+
+\begin{center}
+	\includegraphics[width=0.7\textwidth]{example1}
+	
+	\textit{An example of a DFA}
+\end{center}
 
 
-To make our discussion simpler, in this note, we only consider
-a special case of above process which is the supervised learning 
-framework for pattern recognition. In this special case, data set
-consists of instance-label pairs, where the value of label $\in \{-1, 1\}$. The task of a learning algorithm is to construct a function which is able to predict the corresponding label given the instance. A "Good" learning algorithm will give less errors when do such prediction.
+\subsubsection{The Language of a DFA}
+The \textit{language} of a DFA $A = (Q, \Sigma, \delta, q_0, F)$, denoted $L(A)$, is defined by:
+$$
+	L(A) = \{w | \hat{\delta}(q_0,w) ~\text{is in}~ F \}
+$$
 
-A model that can exactly fit all instance-label pairs in a training
-data set may not always be the best model, as we know that the data set may sometime include noise, in such case, a model fitting all the data may give a worse prediction in the unseen data, such phenomenon is usually referred to as \textbf{overfitting}. A way to overcome \textbf{overfitting} is to look for \textbf{regularities}.
+If $L$ is $L(A)$ for some DFA $A$, then we say $L$ is \textit{regular language}.
 
-If there are many models available, and all of the well fit the data, we normally follow Occam's idea to choose the simplest model, which would more likely to be generalized from the training data to future data. This immediately raises the question of how to 
-measure and qualify simplicity of a model.
-
-There is no universal way of measuring simplicity and the 
-choice of a specific measure inherently depends on the 
-problem at hand.
-
-A formula we believe:
-\begin{quote}
-	\textit{Generalization = Data + Knowledge}
-\end{quote}
-
-Generalization can only come when one adds specific knowledge to 
-the data. Each learning algorithm encodes specific knowledge.
-
-\subsection{Assumptions}
-Several more precise assumptions that made by the Statistical
-Learning Theory Framework:
-
+\subsubsection{Definition of Nondeterministic Finite Automata}
+Let us introduce the formal notions associated with nondeterministic finite automamta. The differences between DFA's and NFA's will be pointed out as we do. An NFA is represented essentially like a DFA:
+$$
+	A = ( Q, \Sigma, \delta, q_0, F )
+$$
+Where:
 \begin{itemize}
-\item Probabilistic model of the phenomenon (or data generation process). Within this model, the relationship between past and
-future observations is that they both are sampled independently
-from the same distribution (i.i.d).
-
+	\item $Q$ is a finite set of \textit{states}.
+	\item $\Sigma$ is a finite set of \textit{input state}.
+	\item $q_0$, a member of $Q$, is the \textit{start state}.
+	\item $F$, a subset of $Q$, is the set of \textit{final} (or accepting) states.
 \end{itemize}
-
-
-\section{Formalization}
-Consider an input space $\mathcal{X}$ and output space $\mathcal{Y}$. As we only consider our specific case (binary classification), we choose $\mathcal{Y} = {-1, 1}$.
-
-$(X, Y) \in \mathcal{X}\times\mathcal{Y}$
-are random variables follow the an unknown distribution $P$.  
-We observe a sequence of i.i.d pairs $(X_i, Y_i)$ sampled according to $P$ and the goal is to construct a function
-$g: \mathcal{X} \rightarrow \mathcal{Y}$ which can predict
-$Y$ from $X$.
-
-A criterion is need to choose the function $g$. It can be
-chosen as $P(g(X) \neq Y)$. We thus define the \textit{risk} of $g$ as
-\begin{equation}
-	R(g) = 	P(g(X) \neq Y) = \mathbb{E}[\mathbb{I}_{g(X)\neq Y}]
-\end{equation}
-
-Note that $P$ can be decomposed as $P_X \times P(Y|X)$. Define the \textit{regression function} $\eta(x) = \mathcal{E}[Y|X=x] = 2\mathcal{P}[Y=1|X=x] - 1$ and the
-\textit{target function} (or Bayes classifier) $t(x) = sgn \eta(x)$. This function achieves the minimum risk over all
-possible measurable functions:
-\begin{equation}
-	R(t) = \inf_g R(g)
-\end{equation}
-Denote the value $R(t)$ as $R^*$, called the Bayes risk.
-
-Define the \textit{noise level} as $s(x) = \min(\mathbb{P}[Y=1|X=x], 1 - \mathbb{P}[Y=1|X=x]) = (1-\eta(x))/2$ and this gives $R^* = \mathbb{E}s(X)$.
-
-Our goal is thus to find this function $t$. but since $P$ is unknown we cannot directly measure the risk. Let's define \textit{empirical risk}:
-\begin{equation}
-	R_n(g) = \frac{1}{b} \sum_{i=1}^n \mathbb{I}_{g(X_i)\neq Y_i}
-\end{equation} 
-It is common to use this quantity as a criterion to select an estimate of $t$.
-
-
-\subsection{Algorithms}
-
-\textbf{Overfitting}. When the input space is infinite, one can always construct a function $g_n$ which perfectly predicts the labels of the training data but behaves on the other points as the opposite of the target function $t$. So one would have minimum empirical risk but maximum risk.
-
-There are essentially two ways to prevent this overfitting situation:
-\begin{itemize}
-\item restrict the class of functions in which the minimization is performed 
-\item modify the criterion to be minimized (e.g. adding a penalty for complicated function)
-\end{itemize}
-
-\textbf{Empirical Risk Minimization}. This algorithm is one of the most straightforward, yet it is usually efficient:
-\begin{equation}
-	g_n = arg \min_{g\in \mathcal{G}} R_n(g)
-\end{equation}
-where $\mathcal{G}$ is the function class we perform minimization.
-
-Sometime (actually in most case) the \textit{best} function in $\mathcal{G}$ is not necessary the overall best function. So one may want to enlarge the model as much as possible, while preventing overfitting.
-
-\textbf{Structural Risk Minimization}.
-An infinite sequence $\{\mathbf{G_d} | d=1, 2, \ldots \}$ of models of increasing size:
-\begin{equation}
-	g_n = arg \min_{g\in \mathcal{G}_d, d\in\mathcal{N}} R_n(g) + \text{pen}(d,n)
-\end{equation}
-
-The penalty $\text{pen}(d,n)$ gives preference to models where estimation error is small and measures the size of capacity of the model.
-
-
-
-\textbf{Regularization}. Another, usually easier to implement approach consists in choosing a large model $\mathcal{G}$ and define on $\mathcal{G}$ a \textit{regularizer}, typically a norm $\|g\|$:
-\begin{equation}
-	g_n = arg \min_{g\in \mathcal{G}} R_n(g) + \lambda \|g\|^2
-\end{equation}
-
-Most existing (and successful) methods can be thought of
-as regularization methods.
-
-
-\textbf{Normalized Regularization}.
-
-\subsection{Bounds} A learning algorithm takes as input the data $(X_1, Y_1), \ldots, (X_n, Y_n)$ and produce a function $g_n$ which depends on this data. We want to estimate the risk of $g_n$. However, $R(g_n)$ is a random variable and it cannot be computed from the data (since it also depends on the unknow $P$). Estimates of $R(g_n)$ will take the form of probabilistic bounds.
-
-Suppose the algorithm chooses its output from a model $\mathcal{G}$, let $g^*$ be the best function in $\mathcal{G}$ with $R(g^*) = \inf_{g\in\mathcal{G}R(g)}$, we have
-\begin{equation}
-	R(g_n) - R^* = [R(g^*) - R^*] + [R(g_n) - R(g^*)]
-\end{equation}
-
-The first term on the right hand side is usually called the approximation error, and measures how well can functions in $\mathcal{G}$ could approach the target (if would be zero if $t\in \mathcal{G}$). The second terms, called estimation error is a random quantity (depends on the data) and measures how close is $g_n$ to the best possible choice in $\mathcal{G}$.
-
-The first term is usually difficult to decide, it requires us to make some assumption on the model and data. We will focus on the estimation error
-
-Another possible decomposition of the risk is the following:
-\begin{equation}
-	R(g_n) = R_n(g_n) + [R(g_n) - R_n(g_n)]
-\end{equation}
-
-Summary: three type of results we may be interested in.
-\begin{itemize}
-\item $R(g_n) \leq R_n(g_n) + B(n,\mathcal{G})$
-\item $R(g_n) \leq R(g^*) + B(n,\mathcal{G})$
-\item $R(g_n) \leq R^* + B(n,\mathcal{G})$
-\end{itemize}
-
-
-
-
-\section{Basic Bounds}
-In this section, simple error bounds (also called generalization bounds) will be covered.
-
-\subsection{Relationship to Empirical Processes}
-TOne way to make a statement about $R(g_n)$ is to say how it relates to an estimate such as the empirical risk $R_n(g_n)$. This relationship can take the form of upper and lower bounds for
-\begin{equation}
-	\mathbb{P}[R(g_n) - R_n(g_n) > \epsilon]
-\end{equation}
-
-Let's denote $Z_i = (X_i,Y_i)$ and $Z = (X,Y)$. given $\mathcal{G}$ define the loss class
-\begin{equation}
-	\mathcal{F} = \{f: (x,y) \mapsto \mathbb{I}_{g(x)\neq y}: g\in \mathcal{G} \}
-\end{equation}
-
-Some shorthand notation: $Pf=\mathbb{E}[f(X,Y)]$ and $P_nf=\frac{1}{n}\sum_{i=1}^nf(X_i,Y_i)$. $P_n$ is usually called the empirical measure associated to the training sample. Our interest if the difference between true and empirical risks:
-\begin{equation}
-	\label{diff_Pf_Pnf}
-	P f_n - P_n f_n
-\end{equation}
-An empirical process is a collection of random variable indexed by a class of functions, and such that each random variable is distributed as a sum of i.i.d. random variables:
-\begin{equation}
-	\{ P f - P_n f\}_{f\in\mathcal{F}} 
-\end{equation}
-
-One of the most studied quantity associated to empirical process is their supremum:
-\begin{equation}
-	\sup_{f\in\mathcal{F}}Pf-P_nf
-\end{equation}
-A upper bound on this quantity will also be a upper bound on (\ref{diff_Pf_Pnf}). This shows that the theory of empirical process is great source of tools and techniques for Statistical Learning Theory.
-
-\subsection{Hoeffding's Inequality}
-Let's rewrite $R(g) - R_n(g)$ as the following:
-\begin{equation}
-	R(g) - R_n(g) = \mathcal{E}[f(Z)] - \frac{1}{n}\sum_{i=1}^nf(Z_i)
-\end{equation}
-
-By the law of large numbers, we have:
-\begin{equation}
-	\mathbb{P}[\lim_{n\rightarrow \infty} \frac{1}{n}\sum_{i=1}^nf(Z_i) = \mathbb{E}[f(Z)]] = 1
-\end{equation}
-This indicates that with enough samples, the empirical risk of a function is a good approximation to its true risk.
-
-\begin{thm} \textbf{(Hoeffding)}. 
-Let $Z_1,\ldots, Z_n$ be i.i.d random variables with $f(Z)\in [a,b]$. Then for all $\epsilon > 0$, we have
-\begin{equation}
-	\mathbb{P}[\big |  \frac{1}{n}\sum_{i=1}^nf(Z_i) - \mathbb{E}[f(Z)]  \big | > \epsilon] \leq 2 \exp \bigg ( -\frac{2n\epsilon^2}{(b-a)^2} \bigg )
-\end{equation}
-
-\end{thm}
-
-Denote the right hand side by $\delta$, solve $\epsilon$, we have
-\begin{equation}
-	\mathbb{P}\big[\big | P_n f - P f  \big | > (b-a) \sqrt{\frac{\log \frac{2}{\delta}}{2n}}\big] \leq \delta
-\end{equation}
-
-or with probability at least $1-\epsilon$, we have
-\begin{equation}
-	\big | P_nf - Pf  \big | \leq (b-a) \sqrt{\frac{\log \frac{2}{\delta}}{2n}}
-\end{equation}
-
-As $f(Z) \in [0, 1]$ in our case, we can conclude that with probability at least $1-\epsilon$
-\begin{equation}
-	R(g) \leq R_n(g) + \sqrt{\frac{\log \frac{2}{\delta}}{2n}}
-\end{equation}
-
-Notice that the function $g$ has to be fixed, if this function depends on the data then above inequality couldn't be applied directly. However, these sets $S$ may be different for different functions. In other words, for the observed sample, only some of the functions in $\mathcal{F}$ will satisfy this inequality.
-
-
-
-\subsection{Limitations}
-What above result essentially says is that for each (fixed) function $f\in \mathcal{F}$, there is a set $S$ of samples for which $Pf-P_nf \leq \sqrt{\frac{\log \frac{2}{\delta}}{2n}}$ (and the set of samples has measure $P[S] \geq 1 - \epsilon$)
-
-
-\subsection{Uniform Deviations}
-
-Before seeing the data, we do not know which function the algorithm will choose. The idea is to consider \textit{uniform} deviations
-\begin{equation}
-	R(f_n) - R_n(f_n) \leq \sup_{f\in \mathcal{F}} (R(f) - R_n(f))
-\end{equation}
-
-In other words, if we can upper bound the supremum on the right, we are done. For this we need a bound which holds simultaneously for all functions in a class.
-
-Consider two functions $f_1$, $f_2$ and define
-$$
-	C_i = \{(x_1,y_1), \ldots , (x_n, y_n): Pf_i - P_nf_i > \epsilon\}
-$$
-by Hoeffding's inequality, for each $i$
-$$
-	\mathbb{P}[C_i] \leq \delta
-$$
-We want to measure how many samples are 'bad' for $i=1,2$.
-$$
-	\mathbb{P}[C_1\cup C_2] \leq \mathbb{P}[C_1] + \mathbb{P}[C_2] \leq 2\delta
-$$
-
-If $|\mathcal{F}| = N$, then
-$$
-	\mathbb{P}[C_1\cup \ldots \cup C_N] \leq \sum_{i=1}^N \mathbb{P}[C_i]
-$$
-As a result:
-$$
-	\mathbb{P}[\exists f\in \mathcal{F}: Pf-P_nf > \epsilon] \leq \sum_{i=1}^N \mathbb{P}[Pf_i-P_nf_i>\epsilon] \leq N \exp (-2n\epsilon^2)
-$$
-
-Now turn to $\mathcal{G} = {g_1,\ldots, g_N}$, for all $\delta > 0$ with probability at least $1-\delta$,
-$$
-	\forall g \in \mathcal{G}, R(g) \leq R_n(g) + \sqrt{\frac{\log N + \log\frac{1}{\delta}}{2n}}
-$$
-
-\subsection{Estimation Error}
-Using the same idea as before, we can also get a bound on the estimation error. Let's start from the inequality
-\begin{equation}
-	R(g^*) \leq R_n(g^*) + \sup_{g\in \mathcal{G}}(R(g)-R_n(g))
-\end{equation}
-Further, we have 
-$$
-	R_n(g^*) - R_n(g_n) \geq 0
-$$
-Thus we obtain
-\begin{align}
-	R(g_n) &=     R(g_n) - R(g^*) + R(g^*)\\
-		   &\leq  R_n(g^*) - R_n(g_n) + R(g_n) -R(g^*) + R(g^*)\\
-		   &\leq  2\sup_{g\in\mathcal{G}}|R(g)-R_n(g)| + R(g^*)
-\end{align}
-We obtain that with probability at least $1-\delta$
-\begin{equation}
-	R(g_n) \leq R(g^*) + \sqrt{\frac{\log N + \log\frac{1}{\delta}}{2n}}
-\end{equation}	
-In the right hand side, both terms depend on the size of the class $\mathcal{G}$. If this size increases, the last first term will decrease, while the second will increase.
-
-
-
-
-\section{Infinite Case: Vapnik-Chervonenkis Theory}
-In this section, previous results will be extended to the case that the class $\mathcal{G}$ is infinite. This requires the introduction of tools from Vapnik-Chervonenkis Theory.
-
-\subsection{Refined Union Bound and Countable Case}
-Recall that by Hoeffding's inequality, for each $f\in \mathcal{F}$, for each $\delta > 0$ (possibly depending on $f$, which we write $\delta(f)$),
-$$
-	\mathbb{P} \bigg [ Pf-P_nf > \sqrt{\frac{\log \frac{1}{\delta(f)}}{2n}} \bigg] \leq \delta(f)
-$$
-With a countable set $\mathcal{F}$, the union bound yields
-$$
-	\mathbb{P} \bigg [\exists f\in \mathcal{F}: Pf-P_nf > \sqrt{\frac{\log \frac{1}{\delta (f)}}{2n}} \bigg ] \leq \sum_{f\in\mathcal{F}}\delta(f)
-$$
-
-Choosing $\delta (f) = \delta p(f)$ with $\sum_{f\in\mathcal{F}}p(f) = 1$, this makes the right hand side equal to $\delta$ and we have: with probability at least $1-\delta$,
-\begin{equation}
-	\forall f\in \mathcal{F}, Pf\leq P_nf + \sqrt{\frac{\log \frac{1}{p(f)} + \log \frac{1}{\delta}}{2n}}
-\end{equation}
-
-This approach provides a way to put knowledge about the algorithm into $p(f)$. However $p$ should be chosen before seeing the data. In general if $p$ is well-chosen, the bound will have a small value. 
-
-\subsection{General Case}
-We should also include the case that $\mathcal{G}$ is uncountable.
-Given a sample $z_1,\ldots, z_n$, consider
-$$
-	\mathcal{F}_{z_1,\ldots,z_n} = \{ (f(z_1),\ldots,f(z_n)): f\in \mathcal{F}\}
-$$
-
-\begin{definition}\textbf{(Growth function)}. 
-\begin{equation}
-	S_{\mathcal{F}}(n) = \sup_{(z_1,\ldots,z_n)}|\mathcal{F}_{z_1,\ldots,z_n} |
-\end{equation}
-
-\end{definition}
-It's trivial to see that $S_{\mathcal{F}}(n) = S_{\mathcal{G}}(n)$
-
-\begin{thm}\textbf{(Vapnik-Chervonenkis).} 
-	\label{v-c}
-For any given $\delta > 0$, with the probability at least $1-\delta$,
-$$
-	\forall g\in\mathcal{G}, R(g) \leq R_n(g)+ 2\sqrt{2\frac{\log S_{\mathcal{G}}(2n) + \log \frac{2}{\delta}}{n}}
-$$
-\end{thm}
-Note that, in the finite case, $|\mathcal{G}|=N$, we have $S_{\mathcal{G}}(n)\leq N$, so above bound is better than the one we had before. Now the most difficult problem will be how to compute $S_{\mathcal{G}}(n)$.
-
-
-\subsection{VC Dimension}
-\begin{definition} \textbf{(VC dimension)}
-The VC dimension of a class $\mathcal{G}$ is the largest $n$ such that
-$$
-	S_{\mathcal{G}}(n) = 2^n
-$$
-\end{definition}
-
-In other words, the VC dimension of a class $\mathcal{G}$ is the size of the largest set that it can shatter.
-
-Many examples of VC dimension could be found from \cite{link5} \href{www.spsc.tugraz.at/system/files/vc_examples.pdf‎}{\textit{\textbf{link}}}.
-
-\begin{lem}\textbf{(Vapnik and Chervonenkis, Sauer, Shelah).} Let $\mathcal{G}$ be a class of function with finite VC-dimension h. Then for all $n\in \mathbb{N}$,
-$$
-	S_{\mathcal{G}}(n) \leq \sum_{i=0}^h {n \choose i}
-$$
-and for all $n \geq h$,
-$$
-	S_{\mathcal{G}}(n) \leq \bigg ( \frac{en}{h} \bigg )^h
-$$
-
-\end{lem}
-
-Use this lemma and theorem \ref{v-c}, we immediately  obtain that if $\mathcal{G}$ has VC dimension $h$, with probability at least $1-\delta$,
-$$
-	\forall g\in\mathcal{G}, R(g) \leq R_n(g)+ 2\sqrt{2\frac{h\log \frac{2en}{h}  + \log \frac{2}{\delta}}{n}}
-$$
-
-\subsection{VC Entropy}
-VC dimension is \textit{distribution independent.} Hence, it allows to get bounds that do not depend on the problem
-at hand, the same bound holds for any distribution. This is in some sense an advantage, but on the other hand, this bound may too loose for most distributions.
-
-We will introduce a distribution-dependent result. Use the notation $N(\mathcal{F}, z_1^n) := |\mathcal{F}_{z_1,\ldots,z_n}|$.
-
-\begin{definition} \textbf{(VC entropy)}
-The (annealed) VC entropy is defined as
-$$
-	H_{\mathcal{F}}(n) = \log \mathbb{E}[N(\mathcal{F}, Z_1^n)].
-$$
-\end{definition}
-
-\begin{thm}
-For any $\delta > 0$, with probability at least $1-\delta$,
-$$
-	\forall g \in \mathcal{G}, R(g) \leq R_n(g)+ 2\sqrt{2\frac{ H_{\mathcal{G}}(2n) + \log \frac{2}{\delta}}{n}}
-$$
-\end{thm}
-
-
-
-
-
-\section{Capacity Measures}
-We have introduced three measures of \textit{capacity} or size of classes of function: the VC dimension and growth function both distribution independent and the VC entropy which depends on the distribution. Apart from the VC dimension, they are usually difficult or impossible to compute. In this section, we will introduce some other measures which not only may give sharper estimates, but also have properties that make their computation possible from the data only.
-\subsection{Covering Numbers}
-Define the normalized Hamming distance of the 'projections' on the sample.
-$$
-	d_n(f,f') = \frac{1}{n}|\{ f(Z_i) \neq f'(Z_i): i=1,\ldots,n \} |
-$$
-We say that a set $f_1,\ldots,f_N$ covers $\mathcal{F}$ at radius $\epsilon$ if
-$$
-	\mathcal{F} \subset \cup_{i=1}^N B(f_i,\epsilon)
-$$
-We then define the covering number of $\mathcal{F}$ as follows.	
-
-\begin{definition} \textbf{(Covering number)}
-The covering number of $\mathcal{F}$ at radius $\epsilon$, with respect to $d_n$, denoted by $N(\mathcal{F},\epsilon, n)$ is the minimum size of a cover of radius $\epsilon$
-\end{definition}
-Note that $N(\mathcal{F},\epsilon, n) = N(\mathcal{G}, \epsilon, n)$.
-
-When the covering number are finite, it is possible to approximate the class $\mathcal{G}$ by a finite set of functions (which cover $\mathcal{G}$). 
-\begin{thm}
-	For any $t > 0$,
-	$$
-	\mathbb{P}[\exists g\in\mathcal{G}: R(g) > R_n(g)+t] \leq 8\mathbb{E}[N(\mathcal{G}, t, n)] e^{-nt^2/128}
-	$$
-\end{thm}
-
-
-
-\subsection{Rademacher Averages}
-Singed empirical measure $R_nf=\frac{1}{n}\sum_{i=1}^n\sigma_if(Z_i)$. Where $\sigma_i$ takes $-1$ or $1$ both with probability $0.5$.
  
-\begin{definition} (Rademacher averages).
-For a class $\mathcal{F}$ of functions, the Rademacher averages is defined as
+
+
+
+\subsection{Nondeterministic Finite Automata}
+A "nondeterministic" finite automaton (NFA) has the power to be in several states at once. This ability is often expressed as an ability to "guess" something about its input. For instance, when the automation is used to search for certain sequences of characters (e.g., keywords) in a long text string, it is helpful to "guess" that we are at the beginning of one of those strings and use a sequence of states to do nothing but check that string appears, character by character.
+
+A informal example:
+
+\begin{center}
+	\includegraphics[width=0.7\textwidth]{NFA}
+	
+	\textit{An NFA accepting all strings that end in $01$}
+\end{center}
+
+\subsubsection{The Extended Transition Function}
+We need to extend the transition function $\delta$ to $\hat{\delta}$ to make it has the ability to take a state and a string as an input and give a column of states as an output. Let's use INDUCTION to construct such functions.
+
+\textbf{BASIS}: $\hat{\delta}(q,\epsilon) = \{q\}$
+
+\textbf{INDUCTION}: Suppose $w$ is of the form $w=xa$, where $a$ is the final symbol of $w$ and $x$ is the rest of $w$. Also suppose that $\hat{\delta}(q,x) = \{p_1,p_2, \ldots, p_k \}.$ Let
 $$
-	\mathcal{R}(\mathcal{F}) = \mathbb{E} \sup_{f\in\mathcal{F}}R_nf
+	\cup_{i=1}^k\delta(p_i,a) = \{r_1, r_2, \ldots, r_m \}
+$$  
+
+Then $\hat{\delta}(q,w) = \{r_1, r_2, \ldots, r_m \}$.
+
+\subsubsection{The Language of an NFA}
+Formally, if $A = (Q, \Sigma, \delta, q_0, F)$ is an NFA, then
 $$
-\end{definition}
+	L(A) = \{w | \hat{\delta}(q_0,w) \bigcap F \neq \emptyset \}
+$$
+
+\subsubsection{Equivalence of Deterministic and Nondeterministic Finite Automata}
+Although there are many languages for which an NFA is easier to construct than a DFA, such as the language of strings that end in $01$, it is a surprising fact that \textbf{every language that can be described by some NFA can also be described by some DFA}, the proof involves a technique called \textit{subset construction} which constructs all subsets of the set of stats of the NFA.
+
+\begin{thm}
+	If $D = (Q_D, \Sigma, \delta_D, \{ q_0\}, F_D)$ is the DFA constructed from NFA $N = (Q_N, \Sigma, \delta_N, q_0, F_N)$ by the subset construction, then $L(D) = L(N).$ 
+\end{thm}
+Further, we have
+\begin{thm}
+	A language $L$ is accepted by some $DFA$ if and only if $L$ is accepted by some $NFA$.
+\end{thm}
+
+\subsection{Finite Automata With Epsilon-Transitions}
+A $\epsilon-$NFA (or $\epsilon$-DFA) is an extended NFA such that  it also accepts $\epsilon$ as input of the transition function, i.e. the input set will be $\{\epsilon\}\cup \Sigma$.
+
+
+
+\begin{thm}
+	A language $L$ is accepted by some $\epsilon-$NFA if and only if $L$ is accepted by some DFA.
+\end{thm}
+
+
+
+
+\section{Regular Expressions and Languages}
+"Regular Expression" are another type of language-defining notation, which may be thought of as a "programming language". It has various applications such as text-search application or compiler components. Regular expressions are closely related to nondeterministic finite automata and can be thought of as a "user-friendly" alternative to the NFA notation for describing software components.
+
+\subsection{Regular Expressions}
+"Regular Expressions" is regarded as a kind of algebraic description of language, comparing with the machine-like description: NFA and DFA.
+We shall find that regular expressions can define exactly the same languages that the various forms of automata describe: the regular languages. However, regular expressions offer something that automata do not: a declarative way to express the strings we want to accept. Thus, regular expressions serve as the input language for many systems that process strings. Examples:
+	\begin{itemize}
+	\item Search command such as UNIX \textbf{grep}. Different search engines convert the regular expressions to DFA or NFA, and simulate that automaton on the file being searched.
+	\item Lexical-analyzer, such as \textbf{Lex} or \textbf{Flex}. Both are extremely useful to construct compilers.
+	\end{itemize}
+	
+\subsubsection{The Operators of Regular Expressions}
+Regular expressions denote languages. For example, \textbf{$01^*+10^*$} denotes the language consisting of all strings that are either a single $0$ followed by any number of $1$'s or a single $1$ followed by any number of $0$'s. Here are the operations:
+\begin{itemize}
+	\item The \textit{union} of two languages $L$ and $M$, denoted $L\cup M$
+	\item The \textit{concatenation} of language $L$ and $M$ is the set of strings that can be formed by taking any string in $L$ and concatenating it with any string in M, denoted $L.M$ or just $LM$.	
+	\item The \textit{closure} (or \textit{star}, or \textit{Kleene closure}) of a language $L$ is denoted $L^*$ and represents the set of those strings that can be formed by taking any number of strings from $L$, possibly with repetitions and concatenating all of them. Formally, $L^* = \cup_{i\geq 0}L^i$ where $L^0 = \{ \epsilon\}$, $L^1 = L$, for $i > 1$ is $L^i = LL\ldots L$ (the concatenation of $i$ copies of $L$) .
+	
+\end{itemize}
 
 
 \begin{thebibliography}{99} % don't worry about the 99
 
+\bibitem{book1}
+Hopcroft, John E. \textbf{\textit{Introduction to Automata Theory, Languages, and Computation}}, 3/E. Pearson Education India, 2008.
+
 \bibitem{paper1}
-Bousquet, Olivier, Stéphane Boucheron, and Gábor Lugosi. \textbf{\textit{Introduction to statistical learning theory.}} Advanced Lectures on Machine Learning. Springer Berlin Heidelberg, 2004. 169-207.
-
-
-\bibitem{Book2}
-Vapnik, Vladimir N. \textbf{\textit{Statistical learning theory.}} (1998).
-
-\bibitem{paper3}
-Mark D. Reid.
-\textbf{\textit{Generalization Bounds.}}
-Encyclopedia of Machine Learning, November, 2010.
-
-\bibitem{Book4}
-MacKay, David JC. \textbf{\textit{Information theory, inference and learning algorithms.}} Cambridge university press, 2003.
-
-\bibitem{link5}
-\textit{\textbf{www.spsc.tugraz.at/system/files/vc\_examples.pdf‎}}
-
-\bibitem{notes}
-Banerjee, Arindam. \textit{\textbf{Lecture notes on Machine Learning Theory}}. University of Minnesota, Fall 2013.
+Wadler, Philip. \textbf{\textit{The essence of functional programming}}. Proceedings of the 19th ACM SIGPLAN-SIGACT symposium on Principles of programming languages. ACM, 1992.
 
 
 \end{thebibliography}
