@@ -225,14 +225,52 @@ We shall find that regular expressions can define exactly the same languages tha
 	\begin{itemize}
 	\item Search command such as UNIX \textbf{grep}. Different search engines convert the regular expressions to DFA or NFA, and simulate that automaton on the file being searched.
 	\item Lexical-analyzer, such as \textbf{Lex} or \textbf{Flex}. Both are extremely useful to construct compilers.
+	\item As discussed in book \cite{book2}, \textit{Mathematica} is a pattern-matching system, in some sense, the \textit{Mathematica Programming Language} could be considered as an extended version of \textit{regular expressions}.
 	\end{itemize}
 	
 \subsubsection{The Operators of Regular Expressions}
 Regular expressions denote languages. For example, \textbf{$01^*+10^*$} denotes the language consisting of all strings that are either a single $0$ followed by any number of $1$'s or a single $1$ followed by any number of $0$'s. Here are the operations:
 \begin{itemize}
 	\item The \textit{union} of two languages $L$ and $M$, denoted $L\cup M$
-	\item The \textit{concatenation} of language $L$ and $M$ is the set of strings that can be formed by taking any string in $L$ and concatenating it with any string in M, denoted $L.M$ or just $LM$.	
+	\item The \textit{concatenation} (called \textit{dot}) of language $L$ and $M$ is the set of strings that can be formed by taking any string in $L$ and concatenating it with any string in M, denoted $L.M$ or just $LM$.	
 	\item The \textit{closure} (or \textit{star}, or \textit{Kleene closure}) of a language $L$ is denoted $L^*$ and represents the set of those strings that can be formed by taking any number of strings from $L$, possibly with repetitions and concatenating all of them. Formally, $L^* = \cup_{i\geq 0}L^i$ where $L^0 = \{ \epsilon\}$, $L^1 = L$, for $i > 1$ is $L^i = LL\ldots L$ (the concatenation of $i$ copies of $L$) .
+	
+\end{itemize}
+
+
+\subsubsection{Building Regular Expressions}
+The algebra of regular expressions use constants and variables that denote languages together with three operators described - union, dot and star. Regular Expression can be described recursively. For each regular expression $E$, we describe the language it represents, which we denote $L(E)$.
+
+\textbf{BASIS}: The basis consist of three parts:
+\begin{itemize}
+	\item The constants $\epsilon$ and $\emptyset$ are regular expressions, denote the language $\{\epsilon\}$ and $\emptyset$, that is, $L(\epsilon) = \{\epsilon\}$, and $L(\emptyset) = \emptyset$.
+	\item If $a$ is any symbol, then $\textbf{a}$ is a regular expression. This expression denotes the language $\{a\}$. That is $L(\textbf{a}) = \{ a \}$. Note that we use boldface font to denote an expression corresponding to a symbol, i.e. \textbf{$a$} refers to $a$.
+	\item A variable, usually capitalized and italic such as \textit{\textbf{L}}, is a variable, representing any language.
+\end{itemize}
+
+\textbf{INDUCTION}:There are four parts to the inductive step, one for each of the three operators and one for the introduction of parentheses.
+\begin{itemize}
+	\item If $E$ and $F$ are regular expressions, then $E+F$ is a regular expression denoting the union of $L(E)$ and $L(F)$. That is, $L(E+F)=L(E)\cup L(F)$.
+	\item If $E$ and $F$ are regular expressions, then $EF$ is a regular expression. $L(EF) = L(E)L(F)$
+	\item If $E$ is a regular expression, then $E^*$ is a regular expression, denoting the closure of $L(E)$. $L(E) = (L(E))^*$
+	\item If $E$ is a regular expression, then $(E)$ denote the same language as $E$
+\end{itemize}
+\textbf{IMPORTANT:} Strictly speaking, a regular expression $E$ is just an expression, not a language, but we sometime use this symbol to represent the language $L(E)$. It is common usage to refer to say "$E$" when we really mean "$L(E)$".	 
+
+\subsubsection{Precedence of Regular-Expression Operators}
+\textbf{Star} is higher than \textbf{dot}, and dot is higher than \textbf{union}. Of course, parentheses can in someway change the order.
+
+\subsection{Finite Automata and Regular Expressions}
+Here are some facts:
+\begin{itemize}
+	\item Every language defined by one of these automata is also definted by a regular expression. For the proof, we can assume the language is accepted by some DFA.
+	\item Every language definted by a regular expression is definted by one of these automata. For this part of th proof, the easiest is to show that there is a NFA with $\epsilon-$transitions accepting the same language. The following figure shows all the equivalences we mentioned:
+	
+\begin{center}
+	\includegraphics[width=0.5\textwidth]{equal}
+		
+	\textit{The equivalence of four different notations for regular languages}
+\end{center}
 	
 \end{itemize}
 
@@ -243,8 +281,14 @@ Regular expressions denote languages. For example, \textbf{$01^*+10^*$} denotes 
 Hopcroft, John E. \textbf{\textit{Introduction to Automata Theory, Languages, and Computation}}, 3/E. Pearson Education India, 2008.
 
 \bibitem{paper1}
+Thompson, Ken. \textbf{\textit{Programming Techniques: Regular expression search algorithm.}} Communications of the ACM 11.6 (1968): 419-422.
+
+\bibitem{paper2}
 Wadler, Philip. \textbf{\textit{The essence of functional programming}}. Proceedings of the 19th ACM SIGPLAN-SIGACT symposium on Principles of programming languages. ACM, 1992.
 
+
+\bibitem{book2}
+Wolfram, Stephen. \textbf{\textit{The Mathematica Book}}, Version 4. Cambridge university press, 1999.
 
 \end{thebibliography}
 
